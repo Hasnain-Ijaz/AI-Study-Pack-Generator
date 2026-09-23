@@ -181,63 +181,67 @@ def run_study_workflow(subject, topic, level, study_time, language, goal):
 
 
 def render_final_pack(final):
-    def bullets(items):
+    """Render the final AI study pack as a clean, professional numbered document."""
+
+    def numbered(items):
         if not items:
-            return "No items available."
-        return "\n".join(f"- {item}" for item in items)
+            return "No information available."
+        return "\n".join(f"{i}. {item}" for i, item in enumerate(items, 1))
 
-    md = f"# {final.get('title', 'AI Study Pack')}\n\n"
-
-    md += "## 📅 Study Plan\n"
+    md = f"# 📚 {final.get('title', 'AI Study Pack')}\n\n"
+    md += "---\n\n"
+    md += "## 1. 📅 Personalized Study Plan\n\n"
     plan = final.get("study_plan", [])
-    if isinstance(plan, list):
-        md += bullets(plan)
-    else:
-        md += str(plan)
+    md += numbered(plan) if isinstance(plan, list) else str(plan)
 
-    md += "\n\n## 📖 Summary\n"
-    md += str(final.get("summary", ""))
+    md += "\n\n## 2. 📖 Topic Overview\n\n"
+    md += str(final.get("summary", "No summary available."))
 
-    md += "\n\n## 🧠 Key Concepts\n"
+    md += "\n\n## 3. 🧠 Key Concepts\n\n"
     concepts = final.get("key_concepts", [])
     if isinstance(concepts, list):
-        for item in concepts:
+        for i, item in enumerate(concepts, 1):
             if isinstance(item, dict):
-                md += f"\n### {item.get('concept', 'Concept')}\n"
-                md += f"{item.get('explanation', '')}\n"
+                md += f"### 3.{i} {item.get('concept', 'Concept')}\n\n"
+                md += f"{item.get('explanation', '')}\n\n"
             else:
-                md += f"- {item}\n"
+                md += f"### 3.{i} Concept\n\n{item}\n\n"
     else:
         md += str(concepts)
 
-    md += "\n## 💡 Examples\n"
+    md += "## 4. 💡 Practical Examples\n\n"
     examples = final.get("examples", [])
-    md += bullets(examples) if isinstance(examples, list) else str(examples)
+    md += numbered(examples) if isinstance(examples, list) else str(examples)
 
-    md += "\n\n## 🎯 Study Tips\n"
+    md += "\n\n## 5. 🎯 Study Tips\n\n"
     tips = final.get("study_tips", [])
-    md += bullets(tips) if isinstance(tips, list) else str(tips)
+    md += numbered(tips) if isinstance(tips, list) else str(tips)
 
-    md += "\n\n## 📝 MCQs\n"
+    md += "\n\n## 6. 📝 Multiple Choice Questions (MCQs)\n\n"
     for i, q in enumerate(final.get("mcqs", []), 1):
-        md += f"\n### {i}. {q.get('question', '')}\n"
-        for option in q.get("options", []):
-            md += f"- {option}\n"
-        md += f"**Answer:** {q.get('answer', '')}\n"
-        md += f"**Explanation:** {q.get('explanation', '')}\n"
+        md += f"### 6.{i} Question {i}\n\n"
+        md += f"**Question:** {q.get('question', '')}\n\n"
+        for j, option in enumerate(q.get("options", []), 1):
+            md += f"{j}. {option}\n"
+        md += f"\n**Correct Answer:** {q.get('answer', '')}\n\n"
+        md += f"**Explanation:** {q.get('explanation', '')}\n\n"
 
-    md += "\n## ✍️ Short Questions\n"
+    md += "## 7. ✍️ Short Answer Questions\n\n"
     for i, q in enumerate(final.get("short_questions", []), 1):
-        md += f"\n**{i}. {q.get('question', '')}**\n"
-        md += f"Answer: {q.get('answer', '')}\n"
+        md += f"### 7.{i} Question {i}\n\n"
+        md += f"**Question:** {q.get('question', '')}\n\n"
+        md += f"**Answer:** {q.get('answer', '')}\n\n"
 
+    md += "## 8. 🚀 Challenge Question\n\n"
     challenge = final.get("challenge_question", {})
-    md += "\n## 🚀 Challenge Question\n"
-    md += f"**Question:** {challenge.get('question', '')}\n\n"
-    md += f"**Answer:** {challenge.get('answer', '')}\n"
+    md += f"**Question:** {challenge.get('question', 'No challenge question available.')}\n\n"
+    md += f"**Answer:** {challenge.get('answer', 'No answer available.')}\n\n"
 
-    md += "\n## ✅ Key Takeaways\n"
+    md += "## 9. ✅ Key Takeaways\n\n"
     takeaways = final.get("key_takeaways", [])
-    md += bullets(takeaways) if isinstance(takeaways, list) else str(takeaways)
+    md += numbered(takeaways) if isinstance(takeaways, list) else str(takeaways)
 
+    md += "\n\n---\n\n### 📌 Study Reminder\n\n"
+    md += "Review the concepts, attempt the questions without looking at the answers, "
+    md += "and use the challenge question to test your deeper understanding."
     return md
