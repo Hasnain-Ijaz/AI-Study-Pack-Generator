@@ -9,7 +9,7 @@ from groq import Groq
 load_dotenv()
 
 MAX_RETRIES = 3
-MODEL = "llama-3.3-70b-versatile"
+MODEL = "openai/gpt-oss-120b"
 
 
 def get_api_key():
